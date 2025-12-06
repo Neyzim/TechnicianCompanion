@@ -1,6 +1,6 @@
 package com.example.TechnicianCompanion.authentication.repositories;
 
-import com.example.TechnicianCompanion.authentication.user.User;
+import com.example.TechnicianCompanion.authentication.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 

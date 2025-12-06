@@ -1,4 +1,4 @@
-package com.example.TechnicianCompanion.authentication.user;
+package com.example.TechnicianCompanion.authentication.models;
 
 public enum UserRole {
     ADMIN("admin"),

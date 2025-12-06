@@ -1,4 +1,4 @@
-package com.example.TechnicianCompanion.authentication.user;
+package com.example.TechnicianCompanion.authentication.models;
 
 import jakarta.persistence.*;
 import lombok.*;

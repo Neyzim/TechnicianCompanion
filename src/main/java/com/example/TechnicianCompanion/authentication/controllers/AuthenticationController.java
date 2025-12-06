@@ -2,11 +2,10 @@ package com.example.TechnicianCompanion.authentication.controllers;
 
 import com.example.TechnicianCompanion.authentication.repositories.UserRepository;
 import com.example.TechnicianCompanion.authentication.security.TokenService;
-import com.example.TechnicianCompanion.authentication.user.AuthenticationDTO;
-import com.example.TechnicianCompanion.authentication.user.LoginResponseDTO;
-import com.example.TechnicianCompanion.authentication.user.RegisterDTO;
-import com.example.TechnicianCompanion.authentication.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.TechnicianCompanion.authentication.dto.AuthenticationDTO;
+import com.example.TechnicianCompanion.authentication.dto.LoginResponseDTO;
+import com.example.TechnicianCompanion.authentication.dto.RegisterDTO;
+import com.example.TechnicianCompanion.authentication.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
