@@ -34,7 +34,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/cities/**").hasRole("SUPERVISOR")
-                        .requestMatchers(HttpMethod.DELETE, "/cities").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.DELETE, "/cities/**").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.PATCH, "/cities").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.GET, "/cities/**").hasRole("SUPERVISOR")
                         .anyRequest().hasRole("TECHNICIAN"))

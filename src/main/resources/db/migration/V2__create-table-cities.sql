@@ -1,0 +1,7 @@
+CREATE TABLE cities (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(256) UNIQUE NOT NULL,
+  state VARCHAR(256) NOT NULL,
+  technicians_ids INTEGER,
+  PRIMARY KEY (id)
+);
