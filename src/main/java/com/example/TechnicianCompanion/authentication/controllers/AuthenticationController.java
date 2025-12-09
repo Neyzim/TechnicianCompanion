@@ -1,11 +1,14 @@
 package com.example.TechnicianCompanion.authentication.controllers;
 
+import com.example.TechnicianCompanion.authentication.models.RefreshToken;
+import com.example.TechnicianCompanion.authentication.repositories.RefreshTokenRepository;
 import com.example.TechnicianCompanion.authentication.repositories.UserRepository;
 import com.example.TechnicianCompanion.authentication.security.TokenService;
 import com.example.TechnicianCompanion.authentication.dto.AuthenticationDTO;
 import com.example.TechnicianCompanion.authentication.dto.LoginResponseDTO;
 import com.example.TechnicianCompanion.authentication.dto.RegisterDTO;
 import com.example.TechnicianCompanion.authentication.models.User;
+import com.example.TechnicianCompanion.authentication.service.RefreshTokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -23,11 +28,15 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService, RefreshTokenService refreshTokenService, RefreshTokenRepository refreshTokenRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.tokenService = tokenService;
+        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @PostMapping("/login")
@@ -35,9 +44,12 @@ public class AuthenticationController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((User) auth.getPrincipal());
+        var user = (User) auth.getPrincipal();
+        var accessToken = tokenService.generateToken(user);
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId().toString());
+
+        return ResponseEntity.ok(new LoginResponseDTO(accessToken, refreshToken.getToken()));
     }
 
     @PostMapping("/register")
@@ -49,5 +61,17 @@ public class AuthenticationController {
 
         this.userRepository.save(user);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> body){
+        String requestRefreshToken = body.get("refresh_token");
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(requestRefreshToken)
+                .orElseThrow(() -> new RuntimeException("Refresh Token Invalido"));
+        refreshTokenService.verifyExpiration(refreshToken);
+        User user = refreshToken.getUser();
+        String newAccessToken = tokenService.generateToken(user);
+
+       return ResponseEntity.ok(new LoginResponseDTO(newAccessToken, refreshToken.getToken()));
     }
 }
