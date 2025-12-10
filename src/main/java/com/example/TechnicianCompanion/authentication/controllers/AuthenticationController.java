@@ -9,6 +9,7 @@ import com.example.TechnicianCompanion.authentication.dto.LoginResponseDTO;
 import com.example.TechnicianCompanion.authentication.dto.RegisterDTO;
 import com.example.TechnicianCompanion.authentication.models.User;
 import com.example.TechnicianCompanion.authentication.service.RefreshTokenService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -73,5 +76,21 @@ public class AuthenticationController {
         String newAccessToken = tokenService.generateToken(user);
 
        return ResponseEntity.ok(new LoginResponseDTO(newAccessToken, refreshToken.getToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(@RequestBody RefreshToken refreshToken) {
+        Optional<RefreshToken> token = refreshTokenRepository.findByToken(refreshToken.getToken());
+        if(!token.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Refresh Token Not Finded");
+        }
+
+        RefreshToken existingToken = token.get();
+
+        if (existingToken.getExpiresAt().isBefore(Instant.now())) {
+            refreshTokenService.deleteExpiredRefreshToken(existingToken);
+            return ResponseEntity.ok("LOGOUT FEITO!");
+        }
+        return ResponseEntity.ok().body(existingToken);
     }
 }

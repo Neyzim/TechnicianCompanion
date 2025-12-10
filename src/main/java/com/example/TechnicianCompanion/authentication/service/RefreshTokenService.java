@@ -24,7 +24,7 @@ public class RefreshTokenService {
         this.userRepository = userRepository;
     }
 
-    public RefreshToken createRefreshToken(String userId){
+    public RefreshToken createRefreshToken(String userId) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(userRepository.findById(userId).orElseThrow());
         refreshToken.setToken(UUID.randomUUID().toString());
@@ -33,10 +33,17 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token){
-        if(token.getExpiresAt().isBefore(Instant.now())){
-            throw new RuntimeException("Refresh Token Expired");
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if (token.getExpiresAt().isBefore(Instant.now())) {
+           return null;
         }
         return token;
+    }
+
+    public void deleteExpiredRefreshToken(RefreshToken refreshToken) {
+        RefreshToken token = verifyExpiration(refreshToken);
+        if (token == null) {
+            refreshTokenRepository.delete(refreshToken);
+        }
     }
 }
