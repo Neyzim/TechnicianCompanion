@@ -82,7 +82,7 @@ public class AuthenticationController {
     public ResponseEntity<?> logoutUser(@RequestBody RefreshToken refreshToken) {
         Optional<RefreshToken> token = refreshTokenRepository.findByToken(refreshToken.getToken());
         if(!token.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Refresh Token Not Finded");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Refresh Token não encontrado");
         }
 
         RefreshToken existingToken = token.get();

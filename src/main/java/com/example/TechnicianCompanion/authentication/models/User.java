@@ -1,14 +1,13 @@
 package com.example.TechnicianCompanion.authentication.models;
 
+import com.example.TechnicianCompanion.reports.models.Report;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Table(name = "users")
 @Entity(name = "users")
@@ -24,6 +23,8 @@ public class User implements UserDetails {
     private String login;
     private String password;
     private UserRole role;
+    @ManyToMany(mappedBy = "technicians")
+    private Set<Report> reports = new HashSet<>();
 
     public User(String login, String password, UserRole role) {
         this.login = login;

@@ -1,7 +1,10 @@
 package com.example.TechnicianCompanion.cities.models;
 
+import com.example.TechnicianCompanion.reports.models.Report;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "cities")
@@ -21,4 +24,6 @@ public class Cities {
     @Column(nullable = false)
     private String state;
     private Integer technicians_ids;
+    @OneToMany(mappedBy = "city")
+    private List<Report> reports;
 }
