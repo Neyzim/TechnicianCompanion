@@ -59,4 +59,9 @@ public class CitiesService {
             return null;
         }
     }
+
+    public Optional<String> findCityByName(Long id){
+        Optional<Cities> findCity = findCityById(id);
+        return findCity.map(Cities::getName);
+    }
 }

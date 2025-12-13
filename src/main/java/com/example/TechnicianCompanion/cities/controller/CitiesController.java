@@ -23,7 +23,6 @@ public class CitiesController {
     @PostMapping(value = "/create")
     public ResponseEntity<CitiesDTO> createCity(@RequestBody CitiesDTO city){
         CitiesDTO createdCity = citiesService.createCity(city);
-        System.out.print("Cidade Criada");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdCity);
     }
