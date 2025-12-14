@@ -16,59 +16,215 @@ public class BuildReportsService {
     public StringBuilder stringBuilder(Report report) {
 
         String cityName = report.getCity() != null ? report.getCity().getName() : "Cidade não definida";
-        StringBuilder reportActivationBuilded = new StringBuilder();
+        StringBuilder reportStringBuilded = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dataFormatada = report.getDayToday().format(formatter);
 
         if (report.getType() == ReportTypes.ATIVACAO) {
-            reportActivationBuilded.append(report.getType())
-                    .append(" / " + cityName)
+            reportStringBuilded.append(report.getType())
+                    .append(" / " + cityName.toUpperCase())
                     .append("\n");
+            reportStringBuilded.append("\n");
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            String dataFormatada = report.getDayToday().format(formatter);
-            reportActivationBuilded.append("DATA: " + dataFormatada + "\n");
-
-            reportActivationBuilded.append("\n");
-            reportActivationBuilded.append("------------------------------------\n");
-            reportActivationBuilded.append("PROTOCOLO: " + report.getProtocolNumber() + "\n");
-            reportActivationBuilded.append("CLIENTE: " + report.getClient() + "\n");
-            reportActivationBuilded.append("------------------------------------\n");
-            reportActivationBuilded.append("INFORMAÇÕES EQUIPAMENTOS:\n");
-            reportActivationBuilded.append("EQUIPAMENTOS INSTALADOS:\n");
-
+            reportStringBuilded.append("DATA: " + dataFormatada + "\n");
+            reportStringBuilded.append("\n");
+            reportStringBuilded.append("------------------------------------\n");
+            reportStringBuilded.append("PROTOCOLO: " + report.getProtocolNumber() + "\n");
+            reportStringBuilded.append("\n");
+            reportStringBuilded.append("CLIENTE: " + report.getClient() + "\n");
+            reportStringBuilded.append("------------------------------------\n");
+            reportStringBuilded.append("INFORMAÇÕES EQUIPAMENTOS:\n");
+            reportStringBuilded.append("\n");
+            reportStringBuilded.append("EQUIPAMENTOS INSTALADOS:\n");
+            reportStringBuilded.append("\n");
             if (report.getInstalledEquipment() != null) {
-                reportActivationBuilded.append("MODELO: " + report.getInstalledEquipment().getOnuModel() + "\n");
-                reportActivationBuilded.append("SERIAL: " + report.getInstalledEquipment().getOnuSerialNumber() + "\n");
+                reportStringBuilded.append("MODELO: " + report.getInstalledEquipment().getOnuModel() + "\n");
+                reportStringBuilded.append("SERIAL: " + report.getInstalledEquipment().getOnuSerialNumber() + "\n");
 
                 if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
-                    reportActivationBuilded.append("MODELO WIFI: " + report.getInstalledEquipment().getWifiEquipmentModel() + "\n");
-                    reportActivationBuilded.append("SERIAL WIFI: " + report.getInstalledEquipment().getWifiEquipmentSN() + "\n");
+                    reportStringBuilded.append("MODELO WIFI: " + report.getInstalledEquipment().getWifiEquipmentModel() + "\n");
+                    reportStringBuilded.append("SERIAL WIFI: " + report.getInstalledEquipment().getWifiEquipmentSN() + "\n");
+                }
+
+                reportStringBuilded.append("\n");
+                if (report.getRemovedEquipment() != null) {
+                    reportStringBuilded.append("EQUIPAMENTOS REMOVIDOS:\n");
+                    reportStringBuilded.append("\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuModel() + "\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuSerialNumber() + "\n");
+                    if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentModel() + "\n");
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentSN() + "\n");
+                    }
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("DADOS DA CONEXÃO:\n");
+                reportStringBuilded.append("\n");
+                if (report.getNetworkInfo() != null) {
+                    reportStringBuilded.append("OLT: " + report.getNetworkInfo().getOltId() + "\n");
+                    reportStringBuilded.append("CAIXA: " + report.getNetworkInfo().getCtoId() + "\n");
+                    reportStringBuilded.append("REDE: " + report.getNetworkInfo().getNetwork() + "\n");
+                    reportStringBuilded.append("PORTA: " + report.getNetworkInfo().getCtoPort() + "\n");
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("MATERIAIS USADOS:\n");
+                reportStringBuilded.append("\n");
+                if (report.getUsedMaterials() != null) {
+                    reportStringBuilded.append("DROP: " + report.getUsedMaterials().getDrop() + "\n");
+                    reportStringBuilded.append("CONECTOR: " + report.getUsedMaterials().getConector() + "\n");
+                    reportStringBuilded.append("ALÇAS: " + report.getUsedMaterials().getAlcas() + "\n");
+                    reportStringBuilded.append("OLHAL: " + report.getUsedMaterials().getOlhal() + "\n");
+                }
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("Tecnicos:\n");
+
+                for (User technician : report.getTechnicians()) {
+                    String technicianName = technician.getName();
+                    reportStringBuilded.append("- ").append(technicianName).append("\n");
                 }
             }
-
-            reportActivationBuilded.append("------------------------------------\n");
-            reportActivationBuilded.append("DADOS DA CONEXÃO:\n");
-            if (report.getNetworkInfo() != null) {
-                reportActivationBuilded.append("OLT: " + report.getNetworkInfo().getOltId() + "\n");
-                reportActivationBuilded.append("CAIXA: " + report.getNetworkInfo().getCtoId() + "\n");
-                reportActivationBuilded.append("REDE: " + report.getNetworkInfo().getNetwork() + "\n");
-                reportActivationBuilded.append("PORTA: " + report.getNetworkInfo().getCtoPort() + "\n");
-            }
-            reportActivationBuilded.append("------------------------------------\n");
-            reportActivationBuilded.append("MATERIAIS USADOS:\n");
-            if (report.getUsedMaterials() != null) {
-                reportActivationBuilded.append("DROP: " + report.getUsedMaterials().getDrop() + "\n");
-                reportActivationBuilded.append("CONECTOR: " + report.getUsedMaterials().getConector() + "\n");
-                reportActivationBuilded.append("ALÇAS: " + report.getUsedMaterials().getAlcas() + "\n");
-                reportActivationBuilded.append("OLHAL: " + report.getUsedMaterials().getOlhal() + "\n");
-            }
-            reportActivationBuilded.append("------------------------------------\n");
-            reportActivationBuilded.append("Tecnicos:\n");
-
-            for (User technician : report.getTechnicians()) {
-                String technicianName = technician.getName();
-                reportActivationBuilded.append("- ").append(technicianName).append("\n");
-            }
         }
-        return reportActivationBuilded;
+            if (report.getType() == ReportTypes.MANUTENCAO) {
+                reportStringBuilded.append(report.getType() + " / " + cityName.toUpperCase());
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("DATA: " + dataFormatada + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("PROTOCOLO: " + report.getProtocolNumber() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("CLIENTE: " + report.getClient() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("RELATO DO CLIENTE: " + report.getCostumerReport()+ "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("PROBLEMA ENCONTRADO: " + report.getProblem()+ "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("O QUE FOI FEITO PARA SOLUCIONAR O PROBLEMA? " + report.getSolution()+ "\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("INFORMAÇÕES EQUIPAMENTOS:\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("EQUIPAMENTOS INSTALADOS:\n");
+                reportStringBuilded.append("\n");
+                if (report.getInstalledEquipment() != null) {
+                    reportStringBuilded.append("MODELO: " + report.getInstalledEquipment().getOnuModel() + "\n");
+                    reportStringBuilded.append("SERIAL: " + report.getInstalledEquipment().getOnuSerialNumber() + "\n");
+
+                    if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
+                        reportStringBuilded.append("MODELO WIFI: " + report.getInstalledEquipment().getWifiEquipmentModel() + "\n");
+                        reportStringBuilded.append("SERIAL WIFI: " + report.getInstalledEquipment().getWifiEquipmentSN() + "\n");
+                    }
+                }
+
+                reportStringBuilded.append("\n");
+                if (report.getRemovedEquipment() != null) {
+                    reportStringBuilded.append("\n");
+                    reportStringBuilded.append("EQUIPAMENTOS REMOVIDOS:\n");
+                    reportStringBuilded.append("\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuModel() + "\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuSerialNumber() + "\n");
+                    if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentModel()+ "\n");
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentSN()+ "\n");
+                    }
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("DADOS DA CONEXÃO:\n");
+                reportStringBuilded.append("\n");
+                if (report.getNetworkInfo() != null) {
+                    reportStringBuilded.append("OLT: " + report.getNetworkInfo().getOltId() + "\n");
+                    reportStringBuilded.append("CAIXA: " + report.getNetworkInfo().getCtoId() + "\n");
+                    reportStringBuilded.append("REDE: " + report.getNetworkInfo().getNetwork() + "\n");
+                    reportStringBuilded.append("PORTA: " + report.getNetworkInfo().getCtoPort() + "\n");
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("MATERIAIS USADOS:\n");
+                reportStringBuilded.append("\n");
+                if (report.getUsedMaterials() != null) {
+                    reportStringBuilded.append("DROP: " + report.getUsedMaterials().getDrop() + "\n");
+                    reportStringBuilded.append("CONECTOR: " + report.getUsedMaterials().getConector() + "\n");
+                    reportStringBuilded.append("ALÇAS: " + report.getUsedMaterials().getAlcas() + "\n");
+                    reportStringBuilded.append("OLHAL: " + report.getUsedMaterials().getOlhal() + "\n");
+                }
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("Tecnicos:\n");
+
+                for (User technician : report.getTechnicians()) {
+                    String technicianName = technician.getName();
+                    reportStringBuilded.append("- ").append(technicianName).append("\n");
+                }
+            }
+            if (report.getType() == ReportTypes.MUDANCA_DE_ENDERECO) {
+                reportStringBuilded.append(report.getType() + " / " + cityName.toUpperCase());
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("DATA: " + dataFormatada + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("PROTOCOLO: " + report.getProtocolNumber() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("CLIENTE: " + report.getClient() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("RELATO DO CLIENTE: " + report.getCostumerReport() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("PROBLEMA ENCONTRADO: " + report.getProblem() + "\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("DECLARO QUE REFORCEI COM O CLIENTE A NECESSIDADE DO PAGAMENTO DA TAXA DE MUDANÇA DE ENDEREÇO E DE CUSTO DE CABO, CASO SEJA USADO\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("INFORMAÇÕES EQUIPAMENTOS:\n");
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("EQUIPAMENTOS INSTALADOS:\n");
+                reportStringBuilded.append("\n");
+                if (report.getInstalledEquipment() != null) {
+                    reportStringBuilded.append("MODELO: " + report.getInstalledEquipment().getOnuModel() + "\n");
+                    reportStringBuilded.append("SERIAL: " + report.getInstalledEquipment().getOnuSerialNumber() + "\n");
+
+                    if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
+                        reportStringBuilded.append("MODELO WIFI: " + report.getInstalledEquipment().getWifiEquipmentModel() + "\n");
+                        reportStringBuilded.append("SERIAL WIFI: " + report.getInstalledEquipment().getWifiEquipmentSN() + "\n");
+                    }
+                }
+                reportStringBuilded.append("\n");
+
+                if (report.getRemovedEquipment() != null) {
+                    reportStringBuilded.append("EQUIPAMENTOS REMOVIDOS:\n");
+                    reportStringBuilded.append("\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuModel() + "\n");
+                    reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getOnuSerialNumber() + "\n");
+                    if (report.getInstalledEquipment().getEquipmentType() == EquipmentType.BRIDGE) {
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentModel()+ "\n");
+                        reportStringBuilded.append("MODELO: " + report.getRemovedEquipment().getWifiEquipmentSN()+ "\n");
+                    }
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("DADOS DA CONEXÃO:\n");
+                reportStringBuilded.append("\n");
+                if (report.getNetworkInfo() != null) {
+                    reportStringBuilded.append("OLT: " + report.getNetworkInfo().getOltId() + "\n");
+                    reportStringBuilded.append("CAIXA: " + report.getNetworkInfo().getCtoId() + "\n");
+                    reportStringBuilded.append("REDE: " + report.getNetworkInfo().getNetwork() + "\n");
+                    reportStringBuilded.append("PORTA: " + report.getNetworkInfo().getCtoPort() + "\n");
+                }
+                reportStringBuilded.append("\n");
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("MATERIAIS USADOS:\n");
+                reportStringBuilded.append("\n");
+                if (report.getUsedMaterials() != null) {
+                    reportStringBuilded.append("DROP: " + report.getUsedMaterials().getDrop() + "\n");
+                    reportStringBuilded.append("CONECTOR: " + report.getUsedMaterials().getConector() + "\n");
+                    reportStringBuilded.append("ALÇAS: " + report.getUsedMaterials().getAlcas() + "\n");
+                    reportStringBuilded.append("OLHAL: " + report.getUsedMaterials().getOlhal() + "\n");
+                }
+                reportStringBuilded.append("------------------------------------\n");
+                reportStringBuilded.append("Tecnicos:\n");
+
+                for (User technician : report.getTechnicians()) {
+                    String technicianName = technician.getName();
+                    reportStringBuilded.append("- ").append(technicianName).append("\n");
+                }
+            }
+        return reportStringBuilded;
     }
 }
