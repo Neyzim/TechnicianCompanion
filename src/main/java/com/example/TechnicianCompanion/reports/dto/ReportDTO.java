@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -21,6 +22,7 @@ public class ReportDTO {
 
     private Long protocolNumber;
     private Long city_id;
+    private LocalDate today;
     private ReportTypes type;
     private String broadbandPlan;
     private String client;

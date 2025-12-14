@@ -1,6 +1,7 @@
 package com.example.TechnicianCompanion.cities.models;
 
 import com.example.TechnicianCompanion.reports.models.Report;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +26,6 @@ public class Cities {
     private String state;
     private Integer technicians_ids;
     @OneToMany(mappedBy = "city")
+    @JsonManagedReference
     private List<Report> reports;
 }

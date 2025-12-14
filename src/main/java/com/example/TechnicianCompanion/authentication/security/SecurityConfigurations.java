@@ -38,6 +38,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.PATCH, "/cities").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.GET, "/cities/**").hasRole("SUPERVISOR")
                         .requestMatchers(HttpMethod.POST, "/report/**").hasRole("SUPERVISOR")
+                        .requestMatchers(HttpMethod.DELETE, "/report/**").hasRole("ADMIN")
                         .anyRequest().hasRole("TECHNICIAN"))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

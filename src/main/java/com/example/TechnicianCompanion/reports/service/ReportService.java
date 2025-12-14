@@ -14,8 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.attribute.UserPrincipal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,18 +28,24 @@ public class ReportService {
     private final ReportMapper reportMapper;
     private final UserRepository userRepository;
     private final CitiesService citiesService;
+    private final BuildReportsService buildReportsService;
 
-    public ReportService(ReportsRepository reportsRepository, ReportMapper reportMapper, UserRepository userRepository, CitiesService citiesService) {
+    public ReportService(ReportsRepository reportsRepository, ReportMapper reportMapper, UserRepository userRepository, CitiesService citiesService, BuildReportsService buildReportsService) {
         this.reportsRepository = reportsRepository;
         this.reportMapper = reportMapper;
         this.userRepository = userRepository;
         this.citiesService = citiesService;
+        this.buildReportsService = buildReportsService;
     }
 
 
     //todo return  city name and user names
     public ReportDTO createNewReport(ReportDTO dto){
         Report reportToSave = reportMapper.map(dto);
+
+        LocalDate dataHoje = LocalDate.now();
+        reportToSave.setDayToday(dataHoje);
+
         if(dto.getEquipmentInstalled() != null){
             Equipment installed = new Equipment();
             dto.getEquipmentInstalled().getEquipmentFields(installed, dto, true);
@@ -65,7 +73,6 @@ public class ReportService {
                 .orElseThrow(null);
         reportToSave.setCity(findedCity);
 
-
         reportsRepository.save(reportToSave);
         return reportMapper.map(reportToSave);
     }
@@ -91,5 +98,9 @@ public class ReportService {
         reportsRepository.deleteById(id);
     }
 
+    public String reportFormatedToReturn(Report report) {
+        StringBuilder builder = buildReportsService.stringBuilder(report);
+        return builder.toString();
+    }
 
 }

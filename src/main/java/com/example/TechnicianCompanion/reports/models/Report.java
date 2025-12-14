@@ -2,12 +2,15 @@ package com.example.TechnicianCompanion.reports.models;
 
 import com.example.TechnicianCompanion.authentication.models.User;
 import com.example.TechnicianCompanion.cities.models.Cities;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +28,11 @@ public class Report {
     private Long protocolNumber;
     @ManyToOne
     @JoinColumn(name = "city_id", nullable = false)
+    @JsonBackReference
     private Cities city;
+    @Column(name = "created_date", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate dayToday;
     @Column(nullable = false)
     private ReportTypes type;
     @Column(nullable = false)
@@ -83,6 +90,7 @@ public class Report {
             joinColumns = @JoinColumn(name = "report_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonBackReference
     private Set<User> technicians = new HashSet<>();
 
 

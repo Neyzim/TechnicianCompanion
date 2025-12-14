@@ -1,6 +1,7 @@
 package com.example.TechnicianCompanion.authentication.models;
 
 import com.example.TechnicianCompanion.reports.models.Report;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
 
@@ -21,10 +23,12 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include
     private String id;
+    private String name;
     private String login;
     private String password;
     private UserRole role;
     @ManyToMany(mappedBy = "technicians")
+    @JsonManagedReference
     private Set<Report> reports = new HashSet<>();
 
     public User(String login, String password, UserRole role) {
@@ -76,4 +80,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
