@@ -1,6 +1,7 @@
 package com.example.TechnicianCompanion.reports.controllers;
 
 import com.example.TechnicianCompanion.reports.dto.ReportDTO;
+import com.example.TechnicianCompanion.reports.dto.ReportResponseDTO;
 import com.example.TechnicianCompanion.reports.models.Report;
 import com.example.TechnicianCompanion.reports.service.ReportService;
 import org.springframework.http.HttpStatus;
@@ -47,5 +48,11 @@ public class ReportController {
     @DeleteMapping(value = "/delete/{id}")
     public void deleteReportById(@PathVariable Long id){
         reportService.deleteReportById(id);
+    }
+
+    @GetMapping("/list/user/{userId}")
+    public ResponseEntity<List<ReportResponseDTO>> listReportsByTechnician(@PathVariable String userId){
+        List<ReportResponseDTO> reportResponseDTOList = reportService.getReportByUser(userId);
+        return ResponseEntity.ok().body(reportResponseDTOList);
     }
 }

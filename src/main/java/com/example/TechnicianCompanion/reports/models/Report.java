@@ -91,7 +91,7 @@ public class Report {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @JsonBackReference
-    private Set<User> technicians = new HashSet<>();
+    private Set<User> user = new HashSet<>();
 
 
 }

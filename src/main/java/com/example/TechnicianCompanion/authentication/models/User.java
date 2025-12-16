@@ -27,7 +27,7 @@ public class User implements UserDetails {
     private String login;
     private String password;
     private UserRole role;
-    @ManyToMany(mappedBy = "technicians")
+    @ManyToMany(mappedBy = "user")
     @JsonManagedReference
     private Set<Report> reports = new HashSet<>();
 

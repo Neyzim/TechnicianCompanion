@@ -6,6 +6,7 @@ import com.example.TechnicianCompanion.cities.models.Cities;
 import com.example.TechnicianCompanion.cities.repositories.CitiesRepository;
 import com.example.TechnicianCompanion.cities.service.CitiesService;
 import com.example.TechnicianCompanion.reports.dto.ReportDTO;
+import com.example.TechnicianCompanion.reports.dto.ReportResponseDTO;
 import com.example.TechnicianCompanion.reports.mapper.ReportMapper;
 import com.example.TechnicianCompanion.reports.models.Equipment;
 import com.example.TechnicianCompanion.reports.models.Report;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,8 +40,6 @@ public class ReportService {
         this.buildReportsService = buildReportsService;
     }
 
-
-    //todo return  city name and user names
     public ReportDTO createNewReport(ReportDTO dto){
         Report reportToSave = reportMapper.map(dto);
 
@@ -59,13 +59,13 @@ public class ReportService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User creator = (User) authentication.getPrincipal();
-        reportToSave.getTechnicians().add(creator);
+        reportToSave.getUser().add(creator);
 
         if(dto.getUser_ids()!= null){
             dto.getUser_ids().forEach(userId ->{
-                User technician = userRepository.findById(userId)
+                User user = userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("Tecnico Desconhecido"));
-                        reportToSave.getTechnicians().add(technician);
+                        reportToSave.getUser().add(user);
             });
         }
 
@@ -101,6 +101,13 @@ public class ReportService {
     public String reportFormatedToReturn(Report report) {
         StringBuilder builder = buildReportsService.stringBuilder(report);
         return builder.toString();
+    }
+
+    public List<ReportResponseDTO> getReportByUser(String userId){
+        List<Report> reportList = reportsRepository.findByUser_id(userId);
+        return reportList.stream()
+                .map(reportMapper::mapEntityToDTO)
+                .collect(Collectors.toList());
     }
 
 }

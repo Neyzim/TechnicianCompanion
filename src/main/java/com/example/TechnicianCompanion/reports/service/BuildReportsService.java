@@ -17,6 +17,7 @@ public class BuildReportsService {
 
         String cityName = report.getCity() != null ? report.getCity().getName() : "Cidade não definida";
         StringBuilder reportStringBuilded = new StringBuilder();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String dataFormatada = report.getDayToday().format(formatter);
 
@@ -80,7 +81,7 @@ public class BuildReportsService {
                 reportStringBuilded.append("------------------------------------\n");
                 reportStringBuilded.append("Tecnicos:\n");
 
-                for (User technician : report.getTechnicians()) {
+                for (User technician : report.getUser()) {
                     String technicianName = technician.getName();
                     reportStringBuilded.append("- ").append(technicianName).append("\n");
                 }
@@ -151,7 +152,7 @@ public class BuildReportsService {
                 reportStringBuilded.append("------------------------------------\n");
                 reportStringBuilded.append("Tecnicos:\n");
 
-                for (User technician : report.getTechnicians()) {
+                for (User technician : report.getUser()) {
                     String technicianName = technician.getName();
                     reportStringBuilded.append("- ").append(technicianName).append("\n");
                 }
@@ -220,7 +221,7 @@ public class BuildReportsService {
                 reportStringBuilded.append("------------------------------------\n");
                 reportStringBuilded.append("Tecnicos:\n");
 
-                for (User technician : report.getTechnicians()) {
+                for (User technician : report.getUser()) {
                     String technicianName = technician.getName();
                     reportStringBuilded.append("- ").append(technicianName).append("\n");
                 }

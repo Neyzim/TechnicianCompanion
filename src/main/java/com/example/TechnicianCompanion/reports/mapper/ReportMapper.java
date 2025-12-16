@@ -4,6 +4,7 @@ import com.example.TechnicianCompanion.authentication.models.User;
 import com.example.TechnicianCompanion.cities.models.Cities;
 import com.example.TechnicianCompanion.cities.repositories.CitiesRepository;
 import com.example.TechnicianCompanion.reports.dto.ReportDTO;
+import com.example.TechnicianCompanion.reports.dto.ReportResponseDTO;
 import com.example.TechnicianCompanion.reports.models.Equipment;
 import com.example.TechnicianCompanion.reports.models.Materials;
 import com.example.TechnicianCompanion.reports.models.NetworkInfo;
@@ -69,7 +70,6 @@ public class ReportMapper {
         return report;
     }
 
-
     public ReportDTO map(Report report) {
         ReportDTO dto = new ReportDTO();
 
@@ -116,19 +116,36 @@ public class ReportMapper {
             dto.setOlhal(report.getUsedMaterials().getOlhal());
         }
 
-        if (report.getTechnicians() != null) {
+        if (report.getUser() != null) {
             dto.setUser_ids(
-                    report.getTechnicians().stream()
+                    report.getUser().stream()
                             .map(User::getId)
                             .collect(Collectors.toList())
             );
         }
         dto.setUser_ids(
-                report.getTechnicians().stream()
+                report.getUser().stream()
                         .map(User::getId)
                         .toList()
         );
 
+        return dto;
+    }
+
+    public Report mapDtoToEntity(ReportResponseDTO dto) {
+        Report report = new Report();
+        report.setType(dto.getType());
+        report.setClient(dto.getClientName());
+        report.setDayToday(dto.getDate());
+
+        return report;
+    }
+
+    public ReportResponseDTO mapEntityToDTO(Report report){
+        ReportResponseDTO dto = new ReportResponseDTO();
+        dto.setType(report.getType());
+        dto.setDate(report.getDayToday());
+        dto.setClientName(report.getClient());
         return dto;
     }
 }
