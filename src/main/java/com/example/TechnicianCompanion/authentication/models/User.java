@@ -17,7 +17,7 @@ import java.util.*;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,49 +36,4 @@ public class User implements UserDetails {
         this.password = password;
         this.role = role;
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return switch (this.role) {
-            case ADMIN -> List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN"),
-                        new SimpleGrantedAuthority("ROLE_SUPERVISOR"),
-                        new SimpleGrantedAuthority("ROLE_TECHNICIAN"));
-
-            case SUPERVISOR -> List.of(
-                        new SimpleGrantedAuthority("ROLE_SUPERVISOR"),
-                        new SimpleGrantedAuthority("ROLE_TECHNICIAN"));
-
-            case TECHNICIAN -> List.of(
-                        new SimpleGrantedAuthority("ROLE_TECHNICIAN"));
-
-            default -> List.of();
-        };
-    }
-
-    @Override
-    public String getUsername() {
-        return login;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
 }
