@@ -146,6 +146,8 @@ public class ReportMapper {
         dto.setType(report.getType());
         dto.setDate(report.getDayToday());
         dto.setClientName(report.getClient());
+        dto.setProtocolNumber(report.getProtocolNumber());
+
         return dto;
     }
 }

@@ -2,6 +2,7 @@ package com.example.TechnicianCompanion.reports.service;
 
 import com.example.TechnicianCompanion.authentication.models.User;
 import com.example.TechnicianCompanion.authentication.repositories.UserRepository;
+import com.example.TechnicianCompanion.authentication.security.UserConfigurationImp;
 import com.example.TechnicianCompanion.cities.models.Cities;
 import com.example.TechnicianCompanion.cities.repositories.CitiesRepository;
 import com.example.TechnicianCompanion.cities.service.CitiesService;
@@ -11,16 +12,16 @@ import com.example.TechnicianCompanion.reports.mapper.ReportMapper;
 import com.example.TechnicianCompanion.reports.models.Equipment;
 import com.example.TechnicianCompanion.reports.models.Report;
 import com.example.TechnicianCompanion.reports.repositories.ReportsRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,32 +41,33 @@ public class ReportService {
         this.buildReportsService = buildReportsService;
     }
 
-    public ReportDTO createNewReport(ReportDTO dto){
+    public ReportDTO createNewReport(ReportDTO dto) {
         Report reportToSave = reportMapper.map(dto);
 
         LocalDate dataHoje = LocalDate.now();
         reportToSave.setDayToday(dataHoje);
 
-        if(dto.getEquipmentInstalled() != null){
+        if (dto.getEquipmentInstalled() != null) {
             Equipment installed = new Equipment();
             dto.getEquipmentInstalled().getEquipmentFields(installed, dto, true);
             reportToSave.setInstalledEquipment(installed);
         }
-        if(dto.getRemovedEquipment() != null){
+        if (dto.getRemovedEquipment() != null) {
             Equipment removed = new Equipment();
             dto.getRemovedEquipment().getEquipmentFields(removed, dto, false);
             reportToSave.setRemovedEquipment(removed);
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User creator = (User) authentication.getPrincipal();
-        reportToSave.getUser().add(creator);
+        UserConfigurationImp Userid = (UserConfigurationImp) authentication.getPrincipal();
+        User creatorToString = Userid.getUser();
+        reportToSave.getUser().add(creatorToString);
 
-        if(dto.getUser_ids()!= null){
-            dto.getUser_ids().forEach(userId ->{
+        if (dto.getUser_ids() != null) {
+            dto.getUser_ids().forEach(userId -> {
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("Tecnico Desconhecido"));
-                        reportToSave.getUser().add(user);
+                reportToSave.getUser().add(user);
             });
         }
 
@@ -78,23 +80,23 @@ public class ReportService {
     }
 
 
-    public Optional<Report> findById(Long id){
+    public Optional<Report> findById(Long id) {
         Optional<Report> foundReport = reportsRepository.findById(id);
-        if(foundReport.isPresent()){
+        if (foundReport.isPresent()) {
             return foundReport;
-        }else {
+        } else {
             return Optional.empty();
         }
     }
 
-    public List<ReportDTO> listAllReports(){
+    public List<ReportDTO> listAllReports() {
         List<Report> reportList = reportsRepository.findAll();
         return reportList.stream()
                 .map(reportMapper::map)
                 .collect(Collectors.toList());
     }
 
-    public void deleteReportById(Long id){
+    public void deleteReportById(Long id) {
         reportsRepository.deleteById(id);
     }
 
@@ -103,11 +105,25 @@ public class ReportService {
         return builder.toString();
     }
 
-    public List<ReportResponseDTO> getReportByUser(String userId){
+    public List<ReportResponseDTO> getReportsByUser(String userId) {
         List<Report> reportList = reportsRepository.findByUser_id(userId);
         return reportList.stream()
                 .map(reportMapper::mapEntityToDTO)
                 .collect(Collectors.toList());
     }
 
+    public ResponseEntity<ReportResponseDTO> findReportLimitedByLoggedUser(Long protocolNumber) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserConfigurationImp Userid = (UserConfigurationImp) authentication.getPrincipal();
+        String creatorToString = Userid.getUser().getId();
+        List<ReportResponseDTO> reportList = getReportsByUser(creatorToString);
+        for (ReportResponseDTO report : reportList) {
+            Long protocolNumberItem = report.getProtocolNumber();
+            System.out.print("asddkasdkmasodmasokdasmd" + protocolNumberItem);
+            if (Objects.equals(protocolNumberItem, protocolNumber)) {
+                return ResponseEntity.status(HttpStatus.FOUND).body(report);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

@@ -16,4 +16,5 @@ public class ReportResponseDTO {
     private ReportTypes type;
     private String clientName;
     private LocalDate date;
+    private Long protocolNumber;
 }
