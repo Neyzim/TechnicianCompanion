@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CitiesMapper {
 
-    //Transforms CITIES DTO -> CITIES ENTITY
     public Cities map(CitiesDTO citiesDTO) {
         Cities city = new Cities();
         city.setName(citiesDTO.getName());
