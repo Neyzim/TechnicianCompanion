@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   app:
-    build: .
+    image: neyzim/techniciancompanion:1.0.1-RELEASE
     container_name: technician-companion
     restart: always
     depends_on:
